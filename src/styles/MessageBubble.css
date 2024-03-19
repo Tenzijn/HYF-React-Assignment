@@ -1,0 +1,30 @@
+/* CSS talk bubble */
+.talk-bubble {
+  margin: 5px;
+  display: block;
+  position: relative;
+  width: fit-content;
+  height: auto;
+  background-color: rgb(15, 39, 255);
+}
+.border {
+  border: 8px solid #666;
+}
+.round {
+  border-radius: 30px;
+  -webkit-border-radius: 30px;
+  -moz-border-radius: 30px;
+}
+
+/* talk bubble contents */
+.talktext {
+  padding: 0.5em;
+  margin: 5px;
+  text-align: left;
+  line-height: 1.5em;
+}
+.talktext p {
+  /* remove webkit p margins */
+  -webkit-margin-before: 0em;
+  -webkit-margin-after: 0em;
+}
