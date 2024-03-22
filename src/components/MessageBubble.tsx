@@ -1,11 +1,29 @@
+import { Box, Text } from '@chakra-ui/react';
 import '../styles/MessageBubble.css';
-function MessageBubble() {
+
+type MessageBubbleProps = {
+  message: string;
+  position: string;
+  color: string;
+};
+
+function MessageBubble(props: MessageBubbleProps) {
   return (
-    <div className='talk-bubble round '>
-      <div className='talktext'>
-        <p>May I have your user name?</p>
-      </div>
-    </div>
+    <Box width={'100%'} display={'flex'} justifyContent={`${props.position}`}>
+      <Box
+        borderRadius={'1.5rem'}
+        bg={`${props.color}`}
+        m={'0.2rem 0.5rem'}
+        display={'block'}
+        position={'relative'}
+        width={'fit-content'}
+        h={'auto'}
+      >
+        <Text p={'0.4rem'} m={'0.2rem'} textAlign={'left'} lineHeight={'1rem'}>
+          {props.message}
+        </Text>
+      </Box>
+    </Box>
   );
 }
 
