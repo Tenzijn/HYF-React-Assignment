@@ -6,11 +6,16 @@ import {
   Button,
 } from '@chakra-ui/react';
 
-function TextInput() {
+type Props = {
+  setData: React.Dispatch<React.SetStateAction<[string, string]>>;
+};
+
+function TextInput({ setData }: Props) {
   return (
     <Box mt={'8px'} maxW={'400px'} w={'100%}'}>
       <InputGroup size='lg'>
         <Input
+          id='login-input'
           pr='4.5rem'
           placeholder='Type here ...'
           bg='#f1f1f1'

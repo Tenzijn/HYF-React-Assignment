@@ -3,3 +3,8 @@
   background-color: #1e1e1e;
   color: white;
 }
+
+.error {
+  color: red;
+  border: 1px solid red;
+}

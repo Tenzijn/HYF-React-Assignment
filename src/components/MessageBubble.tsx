@@ -1,5 +1,5 @@
 import { Box, Text } from '@chakra-ui/react';
-import '../styles/MessageBubble.css';
+// import '../styles/MessageBubble.css';
 
 type MessageBubbleProps = {
   message: string;
