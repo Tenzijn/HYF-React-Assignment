@@ -6,11 +6,7 @@ import {
   Button,
 } from '@chakra-ui/react';
 
-type Props = {
-  setData: React.Dispatch<React.SetStateAction<[string, string]>>;
-};
-
-function TextInput({ setData }: Props) {
+function TextInput() {
   return (
     <Box mt={'8px'} maxW={'400px'} w={'100%}'}>
       <InputGroup size='lg'>

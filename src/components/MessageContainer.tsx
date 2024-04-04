@@ -1,6 +1,5 @@
 import { Box } from '@chakra-ui/react';
-import MessageBubble from './MessageBubble';
-import { LoginHandler } from './LoginHandler';
+import { LoginInstruction } from './LoginInstruction';
 import Typing from './Typing';
 function MessageContainer() {
   return (
@@ -47,8 +46,8 @@ function MessageContainer() {
           m={'2px'}
         ></Box>
       </Box>
-      <LoginHandler />
-      <Typing position='flex-start' color='blue' />
+      <LoginInstruction />
+      <Typing position='flex-end' />
     </Box>
   );
 }
