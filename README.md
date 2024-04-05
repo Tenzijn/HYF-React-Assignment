@@ -1,7 +1,29 @@
 # React project Messaging App
 
 - This is a messaging app that allows users to send messages to each other.
-- The app is built using React, TypeScript
+- The app is built using MERN stack.
+
+## Features
+
+### Must-have features
+
+- Users can sign up and log in.
+- Users can see a list of other users.
+- Users can send messages to each other.
+- Users can see the messages they have sent and received.
+- Users can edit messages they have sent.
+- Users can delete messages they have sent.
+- Users can see when a message has been sent and received.
+- Users can see when messages have updated.
+
+### Nice-to-have features
+
+- Users can see when a message has been read.
+- Users can see when a message has been deleted.
+- Fancy login page.
+- Users can see when a user is typing.
+- Users can see when a user is online.
+- Users can see when a user was last online.
 
 # React + TypeScript + Vite
 
