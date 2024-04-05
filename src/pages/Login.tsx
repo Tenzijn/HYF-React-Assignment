@@ -13,7 +13,7 @@ import { CopyRight } from '../components/CopyRight';
 import '../styles/Login.css';
 import axios from 'axios';
 import { Loading } from '../components/Loading';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 type alertContent = {
   title: string;
@@ -134,6 +134,7 @@ function Login() {
   const [alertContent, setAlertContent] = useState({} as alertContent);
   const [token, setToken] = useState('');
   const [userId, setUserId] = useState('');
+  const navigate = useNavigate();
   const {
     onOpen,
     onClose,
@@ -198,13 +199,11 @@ function Login() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token !== null && token.length > 0) {
-      setIsLogin(true);
+      navigate('/');
     }
   }, [isLogin]);
 
-  return isLogin ? (
-    <Navigate to='/' />
-  ) : (
+  return (
     <div className='loginPage'>
       <Loading
         isLoading={isLoading}

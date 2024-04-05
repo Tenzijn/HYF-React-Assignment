@@ -1,5 +1,7 @@
 # React project Messaging App
 
+[hosted on Netlify](https://tenzin-letschat.netlify.app)
+
 - This is a messaging app that allows users to send messages to each other.
 - The app is built using MERN stack.
 
