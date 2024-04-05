@@ -43,6 +43,7 @@ export default function AlertComponent({
           | undefined
       }
       color={alertContent.color}
+      zIndex={'10000'}
     >
       <AlertIcon />
       <Box>
