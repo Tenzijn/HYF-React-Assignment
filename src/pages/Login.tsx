@@ -201,7 +201,7 @@ function Login() {
     if (token !== null && token.length > 0) {
       navigate('/');
     }
-  }, [isLogin]);
+  }, [isLogin, navigate]);
 
   return (
     <div className='loginPage'>
