@@ -142,8 +142,10 @@ function Login() {
   } = useDisclosure({
     defaultIsOpen: false,
   });
+
   useEffect(() => {
-    // check if response is not empty
+    console.log(response); // for debugging
+    console.log(isError); // for debugging
     if (Object.keys(response).length > 0) {
       if (response.status === 200) {
         onOpen();
