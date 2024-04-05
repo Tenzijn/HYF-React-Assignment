@@ -144,8 +144,8 @@ function Login() {
   });
 
   useEffect(() => {
-    console.log(response); // for debugging
-    console.log(isError); // for debugging
+    console.log('response', response); // for debugging
+    console.log('isError', isError); // for debugging
     if (Object.keys(response).length > 0) {
       if (response.status === 200) {
         onOpen();
@@ -209,8 +209,8 @@ function Login() {
     <div className='loginPage'>
       <Loading
         isLoading={isLoading}
-        title='Process...'
-        description='For the first time, this may take a few seconds. Because the server is
+        title='Processing ...'
+        description='For the first time, this may take a few seconds (30s - 40s). Because the server is
         starting up. Thank you for your patience.'
       />
       {isVisible ? (

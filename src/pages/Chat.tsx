@@ -1,5 +1,10 @@
+import { MessageContainer } from '../components/MessageContainer';
 function Chat() {
-  return <div>Chat</div>;
+  return (
+    <>
+      <MessageContainer />
+    </>
+  );
 }
 
 export { Chat };
