@@ -5,6 +5,7 @@ import {
   Flex,
   Input,
   useDisclosure,
+  Box,
 } from '@chakra-ui/react';
 import AlertComponent from '../components/AlertComponent';
 import { MessageContainer } from '../components/MessageContainer';
@@ -12,6 +13,7 @@ import { CopyRight } from '../components/CopyRight';
 import '../styles/Login.css';
 import axios from 'axios';
 import { Loading } from '../components/Loading';
+import { Navigate } from 'react-router-dom';
 
 const LoginHandler = async (
   username: string,
@@ -19,7 +21,10 @@ const LoginHandler = async (
   setIsLogin: React.Dispatch<React.SetStateAction<boolean>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setResponse: React.Dispatch<React.SetStateAction<{}>>,
-  setIsError: React.Dispatch<React.SetStateAction<{}>>
+  setIsError: React.Dispatch<React.SetStateAction<{}>>,
+  setToken: React.Dispatch<React.SetStateAction<string>>,
+  setUserId: React.Dispatch<React.SetStateAction<string>>,
+  setUsername: React.Dispatch<React.SetStateAction<string>>
 ) => {
   setIsLoading(true);
   await axios
@@ -28,12 +33,14 @@ const LoginHandler = async (
       password: password,
     })
     .then((response) => {
+      setToken(response.data.token);
+      setUserId(response.data.userId);
+      setUsername(response.data.name);
       setIsLogin(true);
       setIsLoading(false);
       setResponse(response);
     })
     .catch((error) => {
-      console.log(error);
       setIsLoading(false);
       setIsError(error);
     });
@@ -53,13 +60,11 @@ const SignUpHandler = async (
       password: password,
     })
     .then((response) => {
-      console.log(response);
       setIsLoading(false);
       setResponse(response);
       return response;
     })
     .catch((error) => {
-      console.log(error);
       setIsLoading(false);
       setIsError(error);
       return error;
@@ -75,13 +80,20 @@ type alertContent = {
 
 type response = {
   status: number;
+  data: {
+    token: string;
+    name: string;
+    userId: string;
+  };
 };
 
 type error = {
   response: {
     status: number;
+    data: {
+      error: string;
+    };
   };
-  message: string;
 };
 
 function Login() {
@@ -92,11 +104,16 @@ function Login() {
   const [response, setResponse] = useState({} as response);
   const [isError, setIsError] = useState({} as error);
   const [alertContent, setAlertContent] = useState({} as alertContent);
-
+  const [token, setToken] = useState('');
+  const [userId, setUserId] = useState('');
+  const {
+    onOpen,
+    onClose,
+    isOpen: isVisible,
+  } = useDisclosure({
+    defaultIsOpen: false,
+  });
   useEffect(() => {
-    console.log('response', response);
-    console.log('isError', isError);
-
     // check if response is not empty
     if (Object.keys(response).length > 0) {
       if (response.status === 200) {
@@ -107,7 +124,7 @@ function Login() {
           status: 'success',
           color: 'green',
         });
-        setResponse({});
+        setResponse({ status: 0, data: { token: '', name: '', userId: '' } });
       } else if (response.status === 201) {
         onOpen();
         setAlertContent({
@@ -116,7 +133,7 @@ function Login() {
           status: 'success',
           color: 'green',
         });
-        setResponse({});
+        setResponse({ status: 0, data: { token: '', name: '', userId: '' } });
       }
     }
 
@@ -126,31 +143,47 @@ function Login() {
         onOpen();
         setAlertContent({
           title: 'Error',
-          description: `An error occurred. ${isError.message}`,
+          description: `An error occurred. ${isError.response.data.error}`,
           status: 'error',
           color: 'red',
         });
-        setIsError({});
+        setIsError({
+          response: {
+            status: 0,
+            data: {
+              error: '',
+            },
+          },
+        });
       }
     }
-  }, [response, isError]);
 
-  const {
-    onOpen,
-    onClose,
-    isOpen: isVisible,
-  } = useDisclosure({
-    defaultIsOpen: false,
-  });
+    if (token.length > 0 && userId.length > 0 && username.length > 0) {
+      localStorage.setItem('token', token);
+      localStorage.setItem(
+        'user',
+        JSON.stringify({ userId: userId, username: username })
+      );
+    }
+  }, [response, isError, onOpen, token, userId, username]);
 
-  if (isLogin) {
-    console.log('logged in');
-    return <div>Logged in</div>;
-  }
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token !== null && token.length > 0) {
+      setIsLogin(true);
+    }
+  }, [isLogin]);
 
-  return (
+  return isLogin ? (
+    <Navigate to='/' />
+  ) : (
     <div className='loginPage'>
-      <Loading isLoading={isLoading} />
+      <Loading
+        isLoading={isLoading}
+        title='Process...'
+        description='For the first time, this may take a few seconds. Because the server is
+        starting up. Thank you for your patience.'
+      />
       {isVisible ? (
         <AlertComponent onClose={onClose} alertContent={alertContent} />
       ) : null}
@@ -165,7 +198,8 @@ function Login() {
           <MessageContainer />
           <Input
             placeholder='User Name'
-            w={'400px'}
+            w={'100%'}
+            maxW={'400px'}
             m={'1rem'}
             onFocus={(e) => {
               if (e.target.value === 'Enter a valid username') {
@@ -189,7 +223,8 @@ function Login() {
           <Input
             placeholder='Password'
             type='password'
-            w={'400px'}
+            w={'100%'}
+            maxW={'400px'}
             onFocus={(e) => {
               if (e.target.value === 'Enter a valid password') {
                 e.target.value = '';
@@ -211,27 +246,72 @@ function Login() {
           />
 
           <Button
-            w={'400px'}
+            w={'100%'}
+            maxW={'400px'}
             mt={'1rem'}
             colorScheme='blue'
             onClick={() => {
+              if (username.length === 0) {
+                onOpen();
+                setAlertContent({
+                  title: 'Error',
+                  description: 'Enter a valid username',
+                  status: 'error',
+                  color: 'red',
+                });
+                return;
+              }
+              if (password.length < 8) {
+                onOpen();
+                setAlertContent({
+                  title: 'Error',
+                  description: 'Enter a valid password',
+                  status: 'error',
+                  color: 'red',
+                });
+                return;
+              }
               LoginHandler(
                 username,
                 password,
                 setIsLogin,
                 setIsLoading,
                 setResponse,
-                setIsError
+                setIsError,
+                setToken,
+                setUserId,
+                setUsername
               );
             }}
           >
             Login
           </Button>
           <Button
-            w={'400px'}
+            w={'100%'}
+            maxW={'400px'}
             mt={'1rem'}
             colorScheme='green'
             onClick={() => {
+              if (username.length === 0) {
+                onOpen();
+                setAlertContent({
+                  title: 'Error',
+                  description: 'Enter a valid username',
+                  status: 'error',
+                  color: 'red',
+                });
+                return;
+              }
+              if (password.length < 8) {
+                onOpen();
+                setAlertContent({
+                  title: 'Error',
+                  description: 'Enter a valid password',
+                  status: 'error',
+                  color: 'red',
+                });
+                return;
+              }
               SignUpHandler(
                 username,
                 password,
@@ -243,8 +323,9 @@ function Login() {
           >
             Sign Up
           </Button>
-
-          <CopyRight />
+          <Box position={'absolute'} bottom={4}>
+            <CopyRight />
+          </Box>
         </Flex>
       </Container>
     </div>
