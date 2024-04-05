@@ -14,6 +14,7 @@ import '../styles/Login.css';
 import axios from 'axios';
 import { Loading } from '../components/Loading';
 import { useNavigate } from 'react-router-dom';
+import { Booting } from '../components/Booting';
 
 type alertContent = {
   title: string;
@@ -134,6 +135,7 @@ function Login() {
   const [alertContent, setAlertContent] = useState({} as alertContent);
   const [token, setToken] = useState('');
   const [userId, setUserId] = useState('');
+  const [isBooting, setIsBooting] = useState(true);
   const navigate = useNavigate();
   const {
     onOpen,
@@ -205,7 +207,9 @@ function Login() {
     }
   }, [isLogin, navigate]);
 
-  return (
+  return isBooting ? (
+    <Booting setIsBooting={setIsBooting} />
+  ) : (
     <div className='loginPage'>
       <Loading
         isLoading={isLoading}
