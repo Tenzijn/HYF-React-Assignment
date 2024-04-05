@@ -15,62 +15,6 @@ import axios from 'axios';
 import { Loading } from '../components/Loading';
 import { Navigate } from 'react-router-dom';
 
-const LoginHandler = async (
-  username: string,
-  password: string,
-  setIsLogin: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setResponse: React.Dispatch<React.SetStateAction<{}>>,
-  setIsError: React.Dispatch<React.SetStateAction<{}>>,
-  setToken: React.Dispatch<React.SetStateAction<string>>,
-  setUserId: React.Dispatch<React.SetStateAction<string>>,
-  setUsername: React.Dispatch<React.SetStateAction<string>>
-) => {
-  setIsLoading(true);
-  await axios
-    .post('https://messaging-api-hdnu.onrender.com/users/login', {
-      name: username,
-      password: password,
-    })
-    .then((response) => {
-      setToken(response.data.token);
-      setUserId(response.data.userId);
-      setUsername(response.data.name);
-      setIsLogin(true);
-      setIsLoading(false);
-      setResponse(response);
-    })
-    .catch((error) => {
-      setIsLoading(false);
-      setIsError(error);
-    });
-};
-
-const SignUpHandler = async (
-  username: string,
-  password: string,
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setResponse: React.Dispatch<React.SetStateAction<{}>>,
-  setIsError: React.Dispatch<React.SetStateAction<{}>>
-) => {
-  setIsLoading(true);
-  await axios
-    .post('https://messaging-api-hdnu.onrender.com/users', {
-      name: username,
-      password: password,
-    })
-    .then((response) => {
-      setIsLoading(false);
-      setResponse(response);
-      return response;
-    })
-    .catch((error) => {
-      setIsLoading(false);
-      setIsError(error);
-      return error;
-    });
-};
-
 type alertContent = {
   title: string;
   description: string;
@@ -94,6 +38,90 @@ type error = {
       error: string;
     };
   };
+};
+
+const LoginHandler = async (
+  username: string,
+  password: string,
+  setIsLogin: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setResponse: (response: response) => void,
+  setIsError: (error: error) => void,
+  setToken: React.Dispatch<React.SetStateAction<string>>,
+  setUserId: React.Dispatch<React.SetStateAction<string>>,
+  setUsername: React.Dispatch<React.SetStateAction<string>>
+) => {
+  setIsLoading(true);
+  await axios
+    .post('https://messaging-api-hdnu.onrender.com/users/login', {
+      name: username,
+      password: password,
+    })
+    .then((response) => {
+      setToken(response.data.token);
+      setUserId(response.data.userId);
+      setUsername(response.data.name);
+      setIsLogin(true);
+      setIsLoading(false);
+      setResponse({
+        status: response.status,
+        data: {
+          token: response.data.token,
+          name: response.data.name,
+          userId: response.data.userId,
+        },
+      });
+    })
+    .catch((error) => {
+      setIsLoading(false);
+      setIsError({
+        response: {
+          status: error.response.status,
+          data: {
+            error: error.response.data.error,
+          },
+        },
+      });
+    });
+};
+
+const SignUpHandler = async (
+  username: string,
+  password: string,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsError: (error: error) => void,
+  setResponse: (response: response) => void
+) => {
+  setIsLoading(true);
+  await axios
+    .post('https://messaging-api-hdnu.onrender.com/users', {
+      name: username,
+      password: password,
+    })
+    .then((response) => {
+      setIsLoading(false);
+      setResponse({
+        status: response.status,
+        data: {
+          token: response.data.token,
+          name: response.data.name,
+          userId: response.data.userId,
+        },
+      });
+      return response;
+    })
+    .catch((error) => {
+      setIsLoading(false);
+      setIsError({
+        response: {
+          status: error.response.status,
+          data: {
+            error: error.response.data.error,
+          },
+        },
+      });
+      return error;
+    });
 };
 
 function Login() {
@@ -316,8 +344,8 @@ function Login() {
                 username,
                 password,
                 setIsLoading,
-                setResponse,
-                setIsError
+                setIsError,
+                setResponse
               );
             }}
           >
