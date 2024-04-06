@@ -13,7 +13,7 @@ import { CopyRight } from './CopyRight';
 
 function ProtectedRoutes() {
   const token = localStorage.getItem('token');
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const logInUser = JSON.parse(localStorage.getItem('user') || '{}');
 
   const auth: { token: boolean } = { token: token ? true : false };
   return auth.token ? (
@@ -36,7 +36,7 @@ function ProtectedRoutes() {
           alignItems={'center'}
         >
           <Stack direction='row' spacing={4} m={'2rem'}>
-            <Avatar name={user.username} boxSize={'2em'}>
+            <Avatar name={logInUser.username} boxSize={'2em'}>
               <AvatarBadge boxSize='1em' bg='green.500' />
             </Avatar>
           </Stack>
@@ -65,7 +65,7 @@ function ProtectedRoutes() {
         >
           <Stack direction='row' spacing={0} m={'0.2rem'}>
             <Text fontSize={'sm'} color='green'>
-              Online
+              Available Users for Chat
             </Text>
           </Stack>
         </Box>
