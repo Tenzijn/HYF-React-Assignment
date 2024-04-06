@@ -43,6 +43,7 @@ function Chat() {
   const [messages, setMessages] = useState([]);
   const [selectedUser, setSelectedUser] = useState({});
   const [selectedMessages, setSelectedMessages] = useState([]);
+  const [newMessage, setNewMessage] = useState('');
   const { users, setUsers, token, setToken } = useContext(UserContext);
   const logInUser = JSON.parse(localStorage.getItem('user') || '{}');
   const config = {
@@ -92,6 +93,10 @@ function Chat() {
       }
     }
   }, [selectedUser]);
+
+  useEffect(() => {
+    console.log('newMessage:', newMessage);
+  }, [newMessage]);
 
   return (
     <Tabs>
@@ -201,13 +206,51 @@ function Chat() {
                   justifyContent={'center'}
                   pt={'1rem'}
                 >
-                  <Textarea placeholder='Type your message here' />
+                  <Textarea
+                    placeholder='Type your message here'
+                    onBlur={(e) => {
+                      setNewMessage(e.target.value);
+                    }}
+                  />
                   <Button
                     colorScheme='blue'
                     variant='solid'
                     size={'lg'}
                     alignSelf={'center'}
                     m={'0.5rem'}
+                    onClick={async () => {
+                      if (config.headers.Authorization === '') {
+                        console.log('No token');
+                        const tokenFromLocalStorage =
+                          localStorage.getItem('token');
+                        if (tokenFromLocalStorage) {
+                          setToken(tokenFromLocalStorage);
+                          config.headers.Authorization = `Bearer ${tokenFromLocalStorage}`;
+                          fetchMessages(config, setMessages);
+                        }
+                      }
+                      await axios
+                        .post(
+                          'https://messaging-api-hdnu.onrender.com/messages',
+                          {
+                            date: new Date(),
+                            message: newMessage,
+                            senderID: logInUser.userId,
+                            receiverID: user._id,
+                            updateDate: new Date(),
+                          },
+                          config
+                        )
+                        .then((response) => {
+                          console.log(response);
+                          setNewMessage('');
+                          fetchMessages(config, setMessages);
+                          setSelectedUser(user);
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                    }}
                   >
                     Send
                   </Button>
