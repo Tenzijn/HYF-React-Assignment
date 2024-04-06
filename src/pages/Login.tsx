@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import {
   Button,
   Container,
@@ -14,7 +14,9 @@ import '../styles/Login.css';
 import axios from 'axios';
 import { Loading } from '../components/Loading';
 import { useNavigate } from 'react-router-dom';
-import { Booting } from '../components/Booting';
+import { UserContext } from '../context/context';
+import { LoginInstruction } from '../components/LoginInstruction';
+import Typing from '../components/Typing';
 
 type alertContent = {
   title: string;
@@ -48,7 +50,7 @@ const LoginHandler = async (
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setResponse: (response: response) => void,
   setIsError: (error: error) => void,
-  setToken: React.Dispatch<React.SetStateAction<string>>,
+  setToken: (token: string) => void,
   setUserId: React.Dispatch<React.SetStateAction<string>>,
   setUsername: React.Dispatch<React.SetStateAction<string>>
 ) => {
@@ -133,10 +135,11 @@ function Login() {
   const [response, setResponse] = useState({} as response);
   const [isError, setIsError] = useState({} as error);
   const [alertContent, setAlertContent] = useState({} as alertContent);
-  const [token, setToken] = useState('');
   const [userId, setUserId] = useState('');
-  const [isBooting, setIsBooting] = useState(true);
   const navigate = useNavigate();
+
+  const { setUsers, token, setToken } = useContext(UserContext);
+
   const {
     onOpen,
     onClose,
@@ -146,8 +149,25 @@ function Login() {
   });
 
   useEffect(() => {
-    console.log('response', response); // for debugging
-    console.log('isError', isError); // for debugging
+    (async () => {
+      await axios
+        .get('https://messaging-api-hdnu.onrender.com/users')
+        .then((response) => {
+          setUsers(response.data);
+        })
+        .catch((error) => {
+          onOpen();
+          setAlertContent({
+            title: 'Error',
+            description: `An error occurred. ${error.response.data.error}`,
+            status: 'error',
+            color: 'red',
+          });
+        });
+    })();
+  }, []);
+
+  useEffect(() => {
     if (Object.keys(response).length > 0) {
       if (response.status === 200) {
         onOpen();
@@ -207,9 +227,7 @@ function Login() {
     }
   }, [isLogin, navigate]);
 
-  return isBooting ? (
-    <Booting setIsBooting={setIsBooting} />
-  ) : (
+  return (
     <div className='loginPage'>
       <Loading
         isLoading={isLoading}
@@ -228,7 +246,10 @@ function Login() {
           w={'100%'}
           h={'100vh'}
         >
-          <MessageContainer />
+          <MessageContainer>
+            <LoginInstruction />
+            <Typing position='flex-end' />
+          </MessageContainer>
           <Input
             placeholder='User Name'
             w={'100%'}

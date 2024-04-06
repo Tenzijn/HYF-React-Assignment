@@ -1,7 +1,10 @@
 import { Box } from '@chakra-ui/react';
-import { LoginInstruction } from './LoginInstruction';
-import Typing from './Typing';
-function MessageContainer() {
+
+type MessageContainerProps = {
+  children: React.ReactNode;
+};
+
+function MessageContainer({ children }: MessageContainerProps) {
   return (
     <Box
       bg={'#616162'}
@@ -46,8 +49,7 @@ function MessageContainer() {
           m={'2px'}
         ></Box>
       </Box>
-      <LoginInstruction />
-      <Typing position='flex-end' />
+      {children}
     </Box>
   );
 }
