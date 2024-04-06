@@ -12,7 +12,11 @@ import {
   Tab,
   TabPanels,
   TabPanel,
+  Divider,
+  Textarea,
+  Button,
 } from '@chakra-ui/react';
+import MessageBubble from '../components/MessageBubble';
 
 const fetchMessages = async (
   config: {
@@ -101,8 +105,10 @@ function Chat() {
                 setSelectedMessages(
                   messages.filter(
                     (message: { receiverID: string; senderID: string }) =>
-                      message.senderID === logInUser.userId &&
-                      message.receiverID === user._id
+                      (message.senderID === logInUser.userId &&
+                        message.receiverID === user._id) ||
+                      (message.senderID === user._id &&
+                        message.receiverID === logInUser.userId)
                   )
                 );
               }}
@@ -138,17 +144,16 @@ function Chat() {
           </Tab>
         )}
       </TabList>
-      <TabPanels h={'50vh'}>
+      <TabPanels height={'70vh'}>
         {users && users.length > 0 ? (
           users.map((user: { _id: string; name: string }) => (
-            <TabPanel key={user._id}>
+            <TabPanel key={user._id} height={'100%'}>
               <Box
                 display={'flex'}
                 flexDirection={'column'}
                 w={'100%'}
                 h={'100%'}
-                justifyContent={'start'}
-                alignItems={'center'}
+                justifyContent={'end'}
                 borderBottom={'1px'}
                 borderBottomColor={'gray.700'}
                 cursor={'pointer'}
@@ -170,10 +175,42 @@ function Chat() {
                         m={'0.1rem'}
                         alignItems={'center'}
                       >
-                        <Text fontSize={'lg'}>{message.message}</Text>
+                        <MessageBubble
+                          message={message.message}
+                          position={
+                            message.senderID === logInUser.userId
+                              ? 'flex-end'
+                              : 'flex-start'
+                          }
+                          color={
+                            message.senderID === logInUser.userId
+                              ? 'green.500'
+                              : 'blue.500'
+                          }
+                        />
+                        {/* <Text fontSize={'lg'}>{message.message}</Text> */}
                       </Stack>
                     )
                   )}
+                </Box>
+                <Divider />
+                <Box
+                  display={'flex'}
+                  w={'100%'}
+                  alignContent={'center'}
+                  justifyContent={'center'}
+                  pt={'1rem'}
+                >
+                  <Textarea placeholder='Type your message here' />
+                  <Button
+                    colorScheme='blue'
+                    variant='solid'
+                    size={'lg'}
+                    alignSelf={'center'}
+                    m={'0.5rem'}
+                  >
+                    Send
+                  </Button>
                 </Box>
               </Box>
             </TabPanel>
