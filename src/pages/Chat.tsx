@@ -163,40 +163,42 @@ function Chat() {
                 borderBottomColor={'gray.700'}
                 cursor={'pointer'}
               >
-                <Box>
-                  <Text>{user.name}</Text>
-                </Box>
-                <Box>
-                  {selectedMessages.map(
-                    (message: {
-                      message: string;
-                      senderID: string;
-                      _id: string;
-                    }) => (
-                      <Stack
-                        key={message._id}
-                        direction='row'
-                        spacing={1}
-                        m={'0.1rem'}
-                        alignItems={'center'}
-                      >
-                        <MessageBubble
-                          message={message.message}
-                          position={
-                            message.senderID === logInUser.userId
-                              ? 'flex-end'
-                              : 'flex-start'
-                          }
-                          color={
-                            message.senderID === logInUser.userId
-                              ? 'green.500'
-                              : 'blue.500'
-                          }
-                        />
-                        {/* <Text fontSize={'lg'}>{message.message}</Text> */}
-                      </Stack>
-                    )
-                  )}
+                <Box
+                  overflow={'scroll'}
+                  display={'flex'}
+                  flexDirection={'column-reverse'}
+                >
+                  <Box>
+                    {selectedMessages.map(
+                      (message: {
+                        message: string;
+                        senderID: string;
+                        _id: string;
+                      }) => (
+                        <Stack
+                          key={message._id}
+                          direction='row'
+                          spacing={1}
+                          m={'0.1rem'}
+                          alignItems={'center'}
+                        >
+                          <MessageBubble
+                            message={message.message}
+                            position={
+                              message.senderID === logInUser.userId
+                                ? 'flex-end'
+                                : 'flex-start'
+                            }
+                            color={
+                              message.senderID === logInUser.userId
+                                ? 'green.500'
+                                : 'blue.500'
+                            }
+                          />
+                        </Stack>
+                      )
+                    )}
+                  </Box>
                 </Box>
                 <Divider />
                 <Box
