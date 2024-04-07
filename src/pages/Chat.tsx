@@ -98,6 +98,19 @@ function Chat() {
     console.log('newMessage:', newMessage);
   }, [newMessage]);
 
+  const loadMessage = (user: { _id: string; name: string }) => {
+    setSelectedUser(user);
+    setSelectedMessages(
+      messages.filter(
+        (message: { receiverID: string; senderID: string }) =>
+          (message.senderID === logInUser.userId &&
+            message.receiverID === user._id) ||
+          (message.senderID === user._id &&
+            message.receiverID === logInUser.userId)
+      )
+    );
+  };
+
   return (
     <Tabs>
       <TabList w={'100%'} overflow={'scroll'}>
@@ -106,16 +119,7 @@ function Chat() {
             <Tab
               key={user._id}
               onClick={() => {
-                setSelectedUser(user);
-                setSelectedMessages(
-                  messages.filter(
-                    (message: { receiverID: string; senderID: string }) =>
-                      (message.senderID === logInUser.userId &&
-                        message.receiverID === user._id) ||
-                      (message.senderID === user._id &&
-                        message.receiverID === logInUser.userId)
-                  )
-                );
+                loadMessage(user);
               }}
             >
               <Box
@@ -248,6 +252,7 @@ function Chat() {
                           setNewMessage('');
                           fetchMessages(config, setMessages);
                           setSelectedUser(user);
+                          loadMessage(user);
                         })
                         .catch((error) => {
                           console.log(error);
