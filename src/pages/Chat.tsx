@@ -26,22 +26,23 @@ const fetchMessages = async (
   },
   setMessages: React.Dispatch<React.SetStateAction<never[]>>
 ) => {
-  if (config.headers.Authorization === '') console.log('No token');
   try {
     const response = await axios.get(
       `https://messaging-api-hdnu.onrender.com/messages/`,
       config
     );
     setMessages(response.data);
-    return;
   } catch (error) {
-    console.log(error);
+    console.log(error); // handle error
   }
 };
 
 function Chat() {
   const [messages, setMessages] = useState([]);
-  const [selectedUser, setSelectedUser] = useState({});
+  const [selectedUser, setSelectedUser] = useState({
+    _id: '',
+    name: '',
+  });
   const [selectedMessages, setSelectedMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const { users, setUsers, token, setToken } = useContext(UserContext);
@@ -57,30 +58,26 @@ function Chat() {
       config.headers.Authorization = `Bearer ${token}`;
       fetchMessages(config, setMessages);
     }
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     (async () => {
-      await axios
-        .get('https://messaging-api-hdnu.onrender.com/users')
-        .then((response) => {
-          const filteredUsers = response.data.filter(
-            (user: { _id: string }) => user._id !== logInUser.userId
-          );
-          setUsers(filteredUsers);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+      try {
+        const response = await axios.get(
+          'https://messaging-api-hdnu.onrender.com/users'
+        );
+        const filteredUsers = response.data.filter(
+          (user: { _id: string }) => user._id !== logInUser.userId
+        );
+        setUsers(filteredUsers);
+        setSelectedUser(filteredUsers[0]);
+      } catch (error) {
+        console.log(error); // handle error
+      }
     })();
   }, []);
 
   useEffect(() => {
-    console.log('Messages:', messages);
-  }, [messages]);
-
-  useEffect(() => {
-    console.log('Selected User:', selectedUser);
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
       fetchMessages(config, setMessages);
@@ -92,24 +89,21 @@ function Chat() {
         fetchMessages(config, setMessages);
       }
     }
-  }, [selectedUser]);
+  }, [selectedUser, token]);
 
   useEffect(() => {
-    console.log('newMessage:', newMessage);
-  }, [newMessage]);
-
-  const loadMessage = (user: { _id: string; name: string }) => {
-    setSelectedUser(user);
-    setSelectedMessages(
-      messages.filter(
-        (message: { receiverID: string; senderID: string }) =>
-          (message.senderID === logInUser.userId &&
-            message.receiverID === user._id) ||
-          (message.senderID === user._id &&
-            message.receiverID === logInUser.userId)
-      )
-    );
-  };
+    if (selectedUser && messages && messages.length > 0) {
+      setSelectedMessages(
+        messages.filter(
+          (message: { receiverID: string; senderID: string }) =>
+            (message.senderID === logInUser.userId &&
+              message.receiverID === selectedUser._id) ||
+            (message.senderID === selectedUser._id &&
+              message.receiverID === logInUser.userId)
+        )
+      );
+    }
+  }, [messages, selectedUser, logInUser.userId]);
 
   return (
     <Tabs>
@@ -119,7 +113,7 @@ function Chat() {
             <Tab
               key={user._id}
               onClick={() => {
-                loadMessage(user);
+                setSelectedUser(user);
               }}
             >
               <Box
@@ -213,8 +207,9 @@ function Chat() {
                   pt={'1rem'}
                 >
                   <Textarea
+                    value={newMessage}
                     placeholder='Type your message here'
-                    onBlur={(e) => {
+                    onChange={(e) => {
                       setNewMessage(e.target.value);
                     }}
                   />
@@ -226,7 +221,6 @@ function Chat() {
                     m={'0.5rem'}
                     onClick={async () => {
                       if (config.headers.Authorization === '') {
-                        console.log('No token');
                         const tokenFromLocalStorage =
                           localStorage.getItem('token');
                         if (tokenFromLocalStorage) {
@@ -235,8 +229,8 @@ function Chat() {
                           fetchMessages(config, setMessages);
                         }
                       }
-                      await axios
-                        .post(
+                      try {
+                        await axios.post(
                           'https://messaging-api-hdnu.onrender.com/messages',
                           {
                             date: new Date(),
@@ -246,17 +240,16 @@ function Chat() {
                             updateDate: new Date(),
                           },
                           config
-                        )
-                        .then((response) => {
-                          console.log(response);
-                          setNewMessage('');
-                          fetchMessages(config, setMessages);
-                          setSelectedUser(user);
-                          loadMessage(user);
-                        })
-                        .catch((error) => {
-                          console.log(error);
-                        });
+                        );
+                        setNewMessage('');
+                        fetchMessages(config, setMessages);
+                        setSelectedUser(user);
+                      } catch (error) {
+                        console.log(error); // handle error
+                      }
+
+                      //clear the message box after sending the message
+                      setNewMessage('');
                     }}
                   >
                     Send
