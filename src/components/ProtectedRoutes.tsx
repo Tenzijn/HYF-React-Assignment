@@ -69,9 +69,6 @@ function ProtectedRoutes() {
               chat app. or you can send messages to a users to see the new
               messages.
             </Text>
-            <Text>
-              <strong>Chat App</strong>
-            </Text>
           </Stack>
         </Box>
         <Outlet />
