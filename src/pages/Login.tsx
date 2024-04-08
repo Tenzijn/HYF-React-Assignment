@@ -6,6 +6,9 @@ import {
   Input,
   useDisclosure,
   Box,
+  Text,
+  List,
+  Divider,
 } from '@chakra-ui/react';
 import AlertComponent from '../components/AlertComponent';
 import { MessageContainer } from '../components/MessageContainer';
@@ -378,6 +381,14 @@ function Login() {
             Sign Up
           </Button>
           <Box position={'absolute'} bottom={4}>
+            <Box mb={'2rem'}>
+              <Text fontSize='lg'>Demo User</Text>
+              <Divider />
+              <List>
+                <Text fontSize='sm'>User Name: user1 / user2</Text>
+                <Text fontSize='sm'>Password: password1 / password2</Text>
+              </List>
+            </Box>
             <CopyRight />
           </Box>
         </Flex>
