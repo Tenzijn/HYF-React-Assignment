@@ -65,7 +65,12 @@ function ProtectedRoutes() {
         >
           <Stack direction='row' spacing={0} m={'0.2rem'}>
             <Text fontSize={'sm'} color='green'>
-              Available Users for Chat
+              Note: you have to click on users to see the new messages in the
+              chat app. or you can send messages to a users to see the new
+              messages.
+            </Text>
+            <Text>
+              <strong>Chat App</strong>
             </Text>
           </Stack>
         </Box>
