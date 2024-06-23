@@ -382,7 +382,7 @@ function Login() {
           </Button>
           <Box position={'absolute'} bottom={4}>
             <Box mb={'2rem'}>
-              <Text fontSize='lg'>Demo User</Text>
+              <Text fontSize='lg'>Demo User (2 users )</Text>
               <Divider />
               <List>
                 <Text fontSize='sm'>User Name: user1 / user2</Text>
